@@ -1,0 +1,34 @@
+---
+#name: cobain-ostack02
+#
+#network:
+#    bridge: br0
+#    interface: eth0
+#    ipaddr: 192.168.2.151
+#    netmask: 255.255.252.0
+#    gateway: 192.168.0.1
+#
+## for centos user
+#password: password
+#cpu: 2
+#mem: 8192
+#
+#host: 192.168.0.105
+#virt_type: kvm
+#virt_hypervisor: hvm
+#
+#os:
+#    type: linux
+#    variant: rhel7
+#disk:
+#    size: 80
+#    path: /home/cobain
+#    cloud_init: cloud-init.iso
+#
+#    # RHEL Cloud Image
+#    #cloud_image: /home/createGuestVM/images/rhel-guest-image-7.3-35.x86_64.qcow2
+#
+#    # CentOS Cloud Image
+#    cloud_image: /home/createGuestVM/images/CentOS-7-x86_64-GenericCloud.qcow2
+#
+#ssh_key: AAAAB3NzaC1yc2EAAAADAQABAAABAQC3R6WKdrhMdTgxoHoyboIyh4p/zFskHYdS0ywExiUk/tH/m9zWzKWjuIPgp2VgxxFAhLtjGwQ15/gI+mDSwxMZN/kSTFj4EfiBgSl17ves0vrb2UUW08c2PxOHWcRudQoLaQLopqi0Skeo7/pPRw8rr1C0QBohxWybpqbSfSP9dWPuRhRz5YvLmDrZNHhEgVqBBrw56t4WBvlx7/+ksWMHqWV9JT1MLu3r3HiHnlWqIQ/O6mivrR5w4YNGR5H3Li324VZ/+V+2WMqV2g8Q3hBMC6RaAOMqK8m5LPi7khzp6K+2s2rRnkVFe0YH3HA//YZuXVMCYPRMec9zNnV09D4J root@compute02

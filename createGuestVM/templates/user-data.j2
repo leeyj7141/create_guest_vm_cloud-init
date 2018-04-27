@@ -1,0 +1,90 @@
+#cloud-config
+
+password: {{password}}
+chpasswd: 
+  list: |
+    root:root123
+  expire: False
+ssh_pwauth: True
+
+network: {config: disabled} 
+
+# Hostname management
+preserve_hostname: False
+hostname: {{vm_name}}
+fqdn: {{vm_name}}
+
+bootcmd:
+  - set -x; echo '#user-data/bootcmd:' >> /etc/sysconfig/network-scripts/ifcfg-eth0
+  - set -x; sed -i -e '/^BOOTPROTO/ s/dhcp/static/g' -e '/PERSISTENT_DHCLIENT/d' /etc/sysconfig/network-scripts/ifcfg-eth0
+  - set -x; echo 'IPADDR={{network_ipaddr}}' >> /etc/sysconfig/network-scripts/ifcfg-eth0
+  - set -x; echo 'NETMASK={{network.netmask}}' >> /etc/sysconfig/network-scripts/ifcfg-eth0
+  - set -x; echo 'GATEWAY={{network_gateway}}' >> /etc/sysconfig/network-scripts/ifcfg-eth0
+  - set -x; echo 'DNS1={{dns1}}' >> /etc/sysconfig/network-scripts/ifcfg-eth0
+  - set -x; echo 'ONBOOT="yes"' >> /etc/sysconfig/network-scripts/ifcfg-eth0
+  - set -x; echo 'NM_CONTROLLED=no' >> /etc/sysconfig/network-scripts/ifcfg-eth0
+  - ifdown eth0
+  - ifup eth0
+
+# Run command when finished with it
+runcmd:
+  - 'systemctl disable NetworkManager'
+  - 'timedatectl set-timezone Asia/Seoul'
+  - 'sed -i "/server .* iburst/d" /etc/chrony.conf'
+  - 'sed -i "/^# Please consider.*$/a\server time.bora.net iburst" /etc/chrony.conf'
+  - 'chmod o-rwx /usr/bin/su'
+  - 'sed -i "s/^PASS_MAX_DAYS.*$/PASS_MAX_DAYS   90/" /etc/login.defs'
+  - 'sed -i "s/^PASS_MIN_LEN.*$/PASS_MIN_LEN    9/" /etc/login.defs'
+  - 'touch /etc/cloud/cloud-init.disabled'
+  - 'set -x; echo "	IdentityFile /etc/ssh/ssh_host_rsa_key" >> /etc/ssh/ssh_config'
+  - 'systemctl disable cloud-config.service'
+  - 'systemctl disable cloud-final.service'
+  - 'systemctl disable cloud-init-local.service'
+  - 'systemctl disable cloud-init.service'
+  - 'yum install bash-completion vim *bin/netstat *bin/route -y'
+
+# Configure where output will go
+output: 
+  all: ">> /var/log/cloud-init.log"
+
+# Install my public ssh key to the first user-defined user configured 
+# in cloud.cfg in the template (which is centos for CentOS cloud images)
+
+ssh_authorized_keys:
+  - {{ssh_key1}}
+  - {{ssh_key2}}
+  - {{ssh_key3}}
+
+ssh_keys:
+  rsa_private: |
+    -----BEGIN RSA PRIVATE KEY-----
+    MIIEowIBAAKCAQEAxRuIftBnI9FlneKTJdeVeviWm8CBFGBcBseZGU4Wg5+qEl0l
+    L5Bt3F0/wn3gBE4iO6ujoZrdDhz6YWmM2R7TyfDV9qeVPTyt6TCmuN8DWlEZApyd
+    poAY3OH+3yCd5/nYKql3Z17Uq5xdGHh+1FbwwgAGUYCtgmG1iFO94c/Ap5f0cIkR
+    oxzAP06fz7sh7r2/GRtChUHGQhqtY3rIJXYbcthFKDyOsArTJdq7E89Mrt1gbhiO
+    LeZW/E2EckAAm9vvJOyHsGbGjCmgqYuOUr68/QrrixKSBtWnvAT9wbbKQF15j1zU
+    wCLBf5VWas/ni9RBgujukbAGAvFmUva8lewF6QIDAQABAoIBABwJYI75QdJ8dIHS
+    uq+FTMPjHDknVrT5R93HAmXxD47FZUGbcjCj0JypvuoBUZ4LJx9puKrCBnN9d7fn
+    dZtkoSd2VFjzWW0OdoZW30AoqKduJaqTcHFAg0jX9JL0ZsGabj8TP+K6QHHwmeVj
+    Llcxzqkpq7xoG0YSc+niT34ROQwddy4XrQeUnaM4WT5U/6T1h3nSjnpl1AoeXB+f
+    veDG5HH4OL8txgYN54f2WIifIBwkP7bO7aKgTSwWGlfoi+qbT/3G+CZa2D+Zobc0
+    os5DW+XgY2XF3J8H2cG3eAv9ycr+GtcR/zl14esl8+rQhiOIEVzEkxUJngLTwXhu
+    CFkhBCkCgYEA7R8H7WwuqBACjEoT70qzrmzfP6+volUYvY32mDZzYQyR9Tt5cgVa
+    Tb2dCUR9q3fiVBh74atzIaXL3KxgLPc/5lN64NxPvz7akrB1eZVLHPPlBN7fndyx
+    l4GxtJuM2lyojBqSE92xDXZ4cV6UAVmXw0suSbU56C0UeoOC2SoQFFMCgYEA1Mzz
+    Ie2d0TpIRhaXKSPeqdF4zbJbNFl4nuBzLK3LfwDP4HIoadbnuyBZXNDrx+a6IdXl
+    fZ3p54AMfbNzTVKTEMCOUuxk1srCFXl9EBoMeUfO6/Dfycs4MuWLUIYQu6KuAwJO
+    yEJdnkHoW7eVkEs4kaNFjOzPOqiAlgOk2+t29VMCgYEAt08N6dWAHByEW7/IuWye
+    i3FPBQTkWjI+9gsRX4p4l8YH7/USZbsNnJvBErEIFc6QAUMMQeExGAn8F5SKpThf
+    BcfzbnHilI4amtwfdOadMry5h5JkfL1n7SAuKNk3gnevNOA1nXX8sdOsOLhM4t5I
+    HIm6NvEK2xo+gpe4R/nkhFECgYAb7lKzT1b5kWbPHEP2+GhPbdknVpO2CVBVuiwj
+    3yPopZijYxh+2+BKpXJVRm7MLDKeIk8e7801v47kKNuneIEpH70OkUyjDLXwz6Nk
+    q6abfJtiSJl3CR91Pr/Mb+xeVHn2lyT0EBHtpcTz1OLir5zbMMz+NE726gsGpa/L
+    1dolVQKBgEHMcTCHMA3hkitsd73SfM53qrXRD20zVMmvcqjJ4V3sjjvNgSCDlY/f
+    //7hcU+ahjhHPmiJzfoHq/yJYIEkPTRc56QROWwiBgqzQrcOFATkU5hPDuzkGnlW
+    O1I+hUbRvdSeiXqI/Fh1p2rb8dBl2O6RawQ8rF5FmjdAe8bNUjV8
+    -----END RSA PRIVATE KEY-----
+
+  rsa_public: "{{ ssh_key2 }}"
+
+disable_root: 0

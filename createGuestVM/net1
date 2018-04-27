@@ -1,0 +1,17 @@
+<network>
+  <name>osp9-lh</name>
+  <uuid>667bded3-861e-4642-b40e-099999999999</uuid>
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  <bridge name='virbr19' stp='on' delay='0'/>
+  <mac address='50:54:00:ca:99:9a'/>
+  <ip address='10.8.8.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='10.8.8.2' end='10.8.8.254'/>
+    </dhcp>
+  </ip>
+</network>
+

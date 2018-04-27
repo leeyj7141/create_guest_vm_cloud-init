@@ -1,0 +1,16 @@
+network:
+  version: 1
+  config:
+    - type: physical
+      name: {{network.interface}}
+      subnets
+        - control: auto
+          type: static
+          address: {{network_ipaddr}}
+          netmask: {{network.netmask}}
+          gateway: {{network.gateway}}
+          dns_nameservers:
+            - 8.8.8.8
+            - 192.168.23.2
+          dns_search:
+            - test.dom

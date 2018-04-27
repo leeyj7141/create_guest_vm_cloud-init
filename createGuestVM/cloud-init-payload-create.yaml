@@ -1,0 +1,74 @@
+---
+- name: cloud init payload create
+  user: root
+  hosts: localhost
+
+  vars_files:
+      - vars/default.yml
+      - vars/guest.yml
+
+  tasks:
+#      - name: start libvirtd
+#        service: name=libvirtd state=started enabled=yes
+#        register: libvirtd
+#
+#      - name: create directory
+#        file: path={{ image_file_path }} state=directory mode=0755
+#
+#      - name: wait for libvirtd to get up
+#        pause: seconds=30
+#        when: libvirtd.changed
+#
+#      - name: get list of vms
+#        virt: command=list_vms
+#        register: virt_vms
+
+      - name: create user-data
+        template: src=templates/user-data.j2 dest=/youngju/cloud-init/user-data
+
+      - name: create meta-data
+        template: src=templates/meta-data.j2 dest=/youngju/cloud-init/meta-data
+
+      - name : create cloud-init iso
+        shell: /bin/bash -c 'genisoimage -output {{ image_file_path }}/{{ name }}-{{ disk.cloud_init }} -volid cidata -joliet -r /youngju/cloud-init/meta-data /youngju/cloud-init/user-data'
+
+#      - name: copy image
+#        command: cp -a {{ disk.cloud_image }} {{ image_file_path }}/{{ name }}.img
+#
+#      - name: resize image
+#        shell: qemu-img resize {{ image_file_path }}/{{ name }}.img +{{ disk_size }}GB
+#        when: disk_size
+#
+#      - name: create vm
+#        command: virt-install --import 
+#                 --name {{ name }}
+#                 --ram  {{ mem }}
+#                 --vcpus {{ cpu }}
+#                 --os-type {{ os.type }}
+#                 --os-variant {{ os.variant }}
+#                 --cpu host-passthrough
+#                 --disk {{ image_file_path }}/{{ name }}.img,format=qcow2,bus=virtio
+#                 --disk {{ image_file_path }}/{{ name }}-{{ disk.cloud_init }},device=cdrom
+#                 --network bridge={{ network.bridge }},model=virtio
+#                 --graphics none
+#                 --{{virt_hypervisor}}
+#                 --virt-type {{ virt_type }}
+#                 --noautoconsole
+#        when: name not in virt_vms.list_vms
+#        with_items: guests
+#
+#      - name: get guest info
+#        virt: command=info
+#        register: virt_info
+#
+#      - name: make sure all vms are running
+#        virt: name={{name}} command=start
+#        when: virt_info[name]['state'] != 'running'
+#        with_items: guests
+#
+#      - name: wait for running vm
+#        pause: seconds=100
+#
+#      - name: restart vm
+#        command: virsh reboot {{ name }}
+#        register: vm_instance

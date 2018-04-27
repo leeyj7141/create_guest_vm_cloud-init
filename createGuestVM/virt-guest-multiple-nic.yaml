@@ -1,0 +1,206 @@
+---
+- name: manage libvirt guests
+  user: root
+  hosts: vms
+  gather_facts: no
+  vars_files:
+      - vars/default.yml
+      - vars/guest.yml
+  tasks:
+      - name: start libvirtd
+        service: name=libvirtd state=started enabled=yes
+        register: libvirtd
+
+      - name: create directory
+        file: path={{ image_file_path }} state=directory mode=0755
+
+      - name: wait for libvirtd to get up
+        pause: seconds=30
+        when: libvirtd.changed
+
+      - name: get list of vms
+        virt: command=list_vms
+        register: virt_vms
+
+      - name: create cloud-init data directory
+        file: path=~/cloud-init/{{ vm_name }} state=directory mode=0777
+
+      - name: create user-data
+        template: src=templates/user-data.j2 dest=~/cloud-init/{{ vm_name }}/user-data
+
+      - name: create meta-data
+        template: src=templates/meta-data.j2 dest=~/cloud-init/{{ vm_name }}/meta-data
+
+      - name : create cloud-init iso
+        shell: /bin/bash -c 'genisoimage -output {{ image_file_path }}/{{ vm_name }}-{{ disk.cloud_init }} -volid cidata -joliet -r ~/cloud-init/{{ vm_name }}/user-data  ~/cloud-init/{{ vm_name }}/meta-data'
+
+     # - name: copy image
+     #   command: cp -a {{ cloud_image }} {{ image_file_path }}/{{ vm_name }}.qcow2
+
+      - name: Check image  exists
+        stat:
+          path: "{{ image_file_path }}/{{ vm_name }}.qcow2"
+        register: image_exist
+
+     # - name: debug 
+     #   debug:
+     #     var: image_exist
+
+      - name: backing image create 
+        shell: qemu-img create -b {{ image_file_path }}/{{ cloud_image }} {{ image_file_path }}/{{ vm_name }}.qcow2 -f qcow2 {{ disk_size }}G
+        when:
+          - disk_size 
+          - not image_exist.stat.exists
+
+      - name: change permission 
+        file: 
+          path: "{{ image_file_path }}/{{ vm_name }}.qcow2"
+          owner: qemu
+          group: qemu 
+
+     # - name: resize image
+     #   shell: qemu-img resize {{ image_file_path }}/{{ vm_name }}.qcow2 +{{ disk_size }}G
+     #   when: disk_size
+
+      - name: create vm
+        command: virt-install --import 
+                 --name {{ vm_name }}
+                 --ram  {{ mem }}
+                 --vcpus {{ cpu }}
+                 --os-type {{ os.type }}
+                 --os-variant {{ os.variant }}
+                 --cpu host-passthrough
+                 --disk {{ image_file_path }}/{{ vm_name }}.qcow2,format=qcow2,bus=virtio
+                 --disk {{ image_file_path }}/{{ vm_name }}-{{ disk.cloud_init }},device=cdrom
+                 --network network={{ network_name }},model=virtio
+                 --network network={{ network_name }},model=virtio
+                 --network network={{ network_name }},model=virtio
+                 --network network={{ network_name }},model=virtio
+                 --network network={{ network_name }},model=virtio
+                 --network bridge=br0,model=virtio
+                 --graphics vnc
+                 --{{virt_hypervisor}}
+                 --virt-type {{ virt_type }}
+                 --noautoconsole
+                 #--graphics none
+                 #--network bridge={{ network.bridge }},model=virtio
+        when: vm_name not in virt_vms.list_vms
+        with_items: guests
+
+      - name: get guest info
+        virt: command=info
+        register: virt_info
+
+      - name: make sure all vms are running
+        virt: name={{ vm_name }} command=start
+        when: virt_info[vm_name]['state'] != 'running'
+        with_items: guests
+
+
+      - name: add hosts 
+        lineinfile: 
+          path: /etc/hosts
+          line: "{{ network_ipaddr }}     {{ vm_name }}"
+          state: present 
+
+#      - name: wait for running vm
+#        pause: seconds=100
+#
+#      - name: restart vm
+#        command: virsh reboot {{ vm_name }}
+#        register: vm_instance
+- name: ceph add storage device 
+  hosts: ceph
+  gather_facts: no
+  vars:
+      - disk_size2: 10
+  vars_files:
+      - vars/default.yml
+      - vars/guest.yml
+  tasks:
+      - name: Check image  exists
+        stat:
+          path: "{{ image_file_path }}/{{ vm_name }}_1.qcow2"
+        register: image_exist1
+
+      - stat:
+          path: "{{ image_file_path }}/{{ vm_name }}_2.qcow2"
+        register: image_exist2
+
+      - stat:
+          path: "{{ image_file_path }}/{{ vm_name }}_3.qcow2"
+        register: image_exist3
+
+      #- name: image list 
+      #  debug:
+      #    msg: |
+      #      "test1 {{ image_exist1 }}"
+      #      "test2 {{ image_exist2 }}"
+      #      "test3 {{ image_exist3 }}"
+
+      - name: storage disk image create 
+        shell: "qemu-img create {{ image_file_path }}/{{ vm_name }}_{{ item.num }}.qcow2 -f qcow2 {{ disk_size2 }}G"
+        when:
+          - disk_size2 
+          - not image_exist1.stat.exists
+          - not image_exist2.stat.exists
+          - not image_exist3.stat.exists
+        args:
+          executable: /bin/bash 
+        with_items:
+          - { num: 1, device: vdb } 
+          - { num: 2, device: vdc }
+          - { num: 3, device: vdd }
+
+      #- name: ceph storage detach 
+      #  shell: "virsh detach-disk {{ vm_name }} {{ item.device }} --live"
+      #  args:
+      #    executable: /bin/bash 
+      #  with_items:
+      #    - { num: 1, device: vdb }
+      #    - { num: 2, device: vdc }
+      #    - { num: 3, device: vdd }
+      #  ignore_errors: true
+
+      #- name: storage disk image remove
+      #  file: 
+      #    state: absent
+      #    path: "{{ image_file_path }}/{{ vm_name }}_{{ item.num }}.qcow2"
+      #  with_items:
+      #    #- "1" 
+      #    #- "2"
+      #    #- "3"
+      #    - { num: 1, device: vdb } 
+      #    - { num: 2, device: vdc }
+      #    - { num: 3, device: vdd }
+
+      - name: ceph storage attach 
+        shell: "virsh attach-disk {{ vm_name }} {{ image_file_path }}/{{ vm_name }}_{{ item.num }}.qcow2 {{ item.device }} --live  --driver qemu --subdriver qcow2 --targetbus virtio"
+        args:
+          executable: /bin/bash 
+        with_items:
+          - { num: 1, device: vdb }
+          - { num: 2, device: vdc }
+          - { num: 3, device: vdd }
+        ignore_errors: yes
+
+- name: post tasks
+  hosts: node
+  gather_facts: no
+  tasks: 
+    - name: network restart prepair
+      shell: "ps -fu nobody |grep -w {{ network_name }} |awk '{print $2}'"
+      register: output1
+
+   # - name: process list
+   #   debug:
+   #     msg: "{{ output1 }}"
+        
+    - name: network restart 
+      shell: "pkill -1 dnsmasq"
+      #shell: "echo {{ output1.stdout }}| xargs kill -1" 
+      #shell: "echo {{ output1.stdout }} |sed 's/n/\ /g' | xargs kill -1" 
+      #shell: "for i in {{ output1.stdout }} ; do kill -1 $i ; done"
+      args:
+        executable: /bin/bash 
+
