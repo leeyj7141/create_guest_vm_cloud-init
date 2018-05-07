@@ -9,6 +9,14 @@
       - vars/default.yml
       - vars/guest.yml
   tasks:
+      - name: start libvirtd
+        service: name=libvirtd state=started enabled=yes
+        register: libvirtd
+
+#      - name: wait for libvirtd to get up
+#        pause: seconds=30
+#        when: libvirtd.changed
+
       - name: directory create
         file: 
           path: "{{ image_file_path }}/cloud-init/"
@@ -58,13 +66,6 @@
       - vars/default.yml
       - vars/guest.yml
   tasks:
-      - name: start libvirtd
-        service: name=libvirtd state=started enabled=yes
-        register: libvirtd
-
-      - name: wait for libvirtd to get up
-        pause: seconds=30
-        when: libvirtd.changed
 
       - name: get list of vms
         virt: command=list_vms
