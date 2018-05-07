@@ -16,6 +16,8 @@ network:
     netmask: 255.255.255.0
     gateway: 10.11.11.1
 
+PWD: /youngju1/cloud-init/createGuestVM
+
 # for default user(centos for CentOS, cloud-user for RHEL)
 password: root123
 
