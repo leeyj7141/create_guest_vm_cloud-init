@@ -1,0 +1,32 @@
+---
+- name: value test 
+  hosts: localhost
+  vars: 
+    - var1: "{{ 9999999999999999999999 | random | to_uuid  }}"
+    #- var2: "{{ 999999 | random | to_uuid  }}"
+    #
+  tasks:
+
+    - name: value2 
+      #shell: "echo -n 00:60:2F; dd bs=1 count=3 if=/dev/random 2>/dev/null |hexdump -v -e /1 -%02X"
+      shell: " printf '52:54:%02x:%02x:%02x:%02x\n' $[RANDOM%256]  $[RANDOM%256]  $[RANDOM%256] $[RANDOM%256]"
+      #shell: "echo -n 00:60:2F; dd bs=1 count=3 if=/dev/random 2>/dev/null |hexdump -v -e \'/1 \"\:%02X\"\'"
+      register: var3
+
+    - name: value4 
+      shell: "N=`ip link  |awk -F: '{print $2}' |grep -iv 'nic'|grep -i virbr | sort -V |tail -n1 |cut -c 7-` ; ((N++)) ; echo $N"
+      register: var4
+
+    - name: value1
+      debug:
+        var: var1
+
+    - name: value3
+      debug:
+        var: var3.stdout_lines
+
+    - name: value4
+      debug:
+        var: var4.stdout_lines
+        
+
