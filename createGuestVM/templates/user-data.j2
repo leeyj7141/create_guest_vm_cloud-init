@@ -1,9 +1,12 @@
 #cloud-config
 
-password: {{password}}
+# set centos or cloud-user password
+password: {{ userpassword }}
+# set root user password
 chpasswd: 
   list: |
-    root:root123
+    root:{{ rootpassword }}
+    centos:{{ userpassword }}
   expire: False
 ssh_pwauth: True
 
@@ -11,8 +14,8 @@ network: {config: disabled}
 
 # Hostname management
 preserve_hostname: False
-hostname: {{vm_name}}
-fqdn: {{vm_name}}
+hostname: {{inventory_hostname}}
+fqdn: {{inventory_hostname}}
 
 bootcmd:
   - set -x; echo '#user-data/bootcmd:' >> /etc/sysconfig/network-scripts/ifcfg-eth0

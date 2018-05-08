@@ -7,14 +7,19 @@ virt_hypervisor: hvm
 # Default network config for intance
 network:
     bridge: br0
+    net_name1: youngju-net-10
+    net_name2: youngju-net-20
+    net_name3: youngju-net-30
+    net_name4: youngju-net-40
+    net_name5: youngju-net-50
     interface: eth0
     netmask: 255.255.255.0
+    gateway: 10.11.11.1
 
 PWD: /youngju1/cloud-init/createGuestVM
 
 # for default user(centos for CentOS, cloud-user for RHEL)
-userpassword: root123
-rootpassword: root123
+password: root123
 
 os:
     type: linux
@@ -22,6 +27,13 @@ os:
 
 disk:
     cloud_init: cloud-init.iso
+
+    # RHEL Cloud Image
+    #cloud_image: /youngju1/vms/rhel-guest-image-7.3-36.x86_64.qcow2
+    # CentOS Cloud Image
+#    cloud_image: /youngju1/vms/CentOS-7-x86_64-GenericCloud-1611.qcow2
+#disk_cloud_image: /youngju1/vms/CentOS-7-x86_64-GenericCloud-1611.qcow2
+#disk_cloud_image:  rhel-guest-image-7.3-36.x86_64.qcow2
 
 ssh_private_key: |
   -----BEGIN RSA PRIVATE KEY-----
@@ -56,3 +68,4 @@ ssh_private_key: |
 ssh_key1: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD2wgI9na26l99n/Hk3S1cnYkI5W5H4k3v39TvHxpxlv60Xp5mtrEhSlbS5pjgvG574dGV+mfdi3d4cA/59KFjiRawkrBP3K93hIvunFHt0U3QBgRgexZd/ApE7Pe3aE7TVPWs8liCzPTEjm9ZaqgxS0ZaZlTTHMFxNowKPKSQ32tslwPHbnm7QqmRgjZQdS0D9LFpRIpDz2hzBvRLc/HGMHzQ7R+zwcUKc7lx4I+9A9NRhnOKpRV1C52Avk2/eFcisLJfywDTZj0l2j8iRUUDAY4OW2xs/zHrsxK2fJ2CBrPXZ1XV8Zkqc1FBRgkK313Bp3HxYY/vJ1xk7sk4C+HoF krd@free.style.ted 
 ssh_key2: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDFG4h+0Gcj0WWd4pMl15V6+JabwIEUYFwGx5kZThaDn6oSXSUvkG3cXT/CfeAETiI7q6Ohmt0OHPphaYzZHtPJ8NX2p5U9PK3pMKa43wNaURkCnJ2mgBjc4f7fIJ3n+dgqqXdnXtSrnF0YeH7UVvDCAAZRgK2CYbWIU73hz8Cnl/RwiRGjHMA/Tp/PuyHuvb8ZG0KFQcZCGq1jesgldhty2EUoPI6wCtMl2rsTz0yu3WBuGI4t5lb8TYRyQACb2+8k7IewZsaMKaCpi45Svrz9CuuLEpIG1ae8BP3BtspAXXmPXNTAIsF/lVZqz+eL1EGC6O6RsAYC8WZS9ryV7AXp root@kvm2.test.dom
 ssh_key3: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC89+KTru1TdaKbrSBdTSJMIdW0wHL6lXHwvNkk1W77ofr/Ys/qI7PBz56IBUOMKhk/Gy1z02RqsG4i4SLH6+Oq5GZOGXG4dNhfQcfKq9ouTyJ2fwqBr/49MB+kAxyZkCFrjffPe/VWVPYQHxT5SItqLX7e4gLRNFUNR2el1vkOyk4b20PiVZQpJS4R6CuQ0mktwKsMqEu/lb9weIqgRFn9gw4GyWXnA5cSFGting5dbXUvrrlpDIXZ9WDJFKzONbdgw7AuxUF0DPLyj5STMjgZTAhANlUbdkorxwAMJx5Al6KGtypwdzgEndXD2Z9CdEsV7ZZLfnEhpIw7JArzxo2F root@cloud-test02.osci.kr
+#ssh_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHJJ05197gTf25ZeVssPTAipgG0SlDEcfr+YLNRAL9M7BwVBQ3RNECb6tAHj60pbCqWZ3PDHru9T72U3av2fpew7tZ61m2qv8cl6UW/5otBS2p/ztCQQw6rfk6AnVh2s8QJNo1lWntmt0NnArbAcTK61Y3RzCQ5aX9cikiJqS6RK+XgZ+4nuCoMzyFRV/qYmWX972832eJWG9hQAm4Ltq9F8k0oUyLdtvs/lTQgOmQb/5pr4Rjk8oIUyHcNNgp885xpmxp5FoWtbpMGjyStY57XDBNoBXbu7TU3H97UksHSOoY2rLVLKnBbsizDlb7StlITWWJd8Z2jqibAxjB0EkR root@jyy

@@ -1,10 +1,5 @@
 ---
-#vm_name: 
 image_file_path: /youngju1/vms/
-#image_file_path: /youngju/vms/
-#network_ipaddr: 10.11.11.251
 
 # HW
-#cpu: 2
-#mem: 8192
 disk_size: 50

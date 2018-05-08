@@ -10,21 +10,21 @@
 192.168.92.1 
 
 [vms]
-yj14-ocpm1  cpu=4 mem=12288 network_ipaddr="10.14.1.11" vm_name="yj14-ocpm1"   
-yj14-ocpm2  cpu=4 mem=12288 network_ipaddr="10.14.1.12" vm_name="yj14-ocpm2"   
-yj14-ocpm3  cpu=4 mem=12288 network_ipaddr="10.14.1.13" vm_name="yj14-ocpm3"   
-yj14-ocps1  cpu=4 mem=4096  network_ipaddr="10.14.1.31" vm_name="yj14-ocps1"  
-yj14-ocps2  cpu=4 mem=4096  network_ipaddr="10.14.1.32" vm_name="yj14-ocps2"  
-yj14-ocps3  cpu=4 mem=4096  network_ipaddr="10.14.1.33" vm_name="yj14-ocps3"  
-yj14-ocpi1  cpu=4 mem=6000  network_ipaddr="10.14.1.21" vm_name="yj14-ocpi1"   
-yj14-ocpi2  cpu=4 mem=6000  network_ipaddr="10.14.1.22" vm_name="yj14-ocpi2"   
-yj14-ocpi3  cpu=4 mem=6000  network_ipaddr="10.14.1.23" vm_name="yj14-ocpi3"   
-yj14-deploy cpu=4 mem=12288 network_ipaddr="10.14.1.3"  vm_name="yj14-deploy" 
+yj14-ocpm1  cpu=4 mem=12288 network_ipaddr="10.14.1.11" 
+yj14-ocpm2  cpu=4 mem=12288 network_ipaddr="10.14.1.12" 
+yj14-ocpm3  cpu=4 mem=12288 network_ipaddr="10.14.1.13" 
+yj14-ocps1  cpu=4 mem=4096  network_ipaddr="10.14.1.31" 
+yj14-ocps2  cpu=4 mem=4096  network_ipaddr="10.14.1.32" 
+yj14-ocps3  cpu=4 mem=4096  network_ipaddr="10.14.1.33" 
+yj14-ocpi1  cpu=4 mem=6000  network_ipaddr="10.14.1.21" 
+yj14-ocpi2  cpu=4 mem=6000  network_ipaddr="10.14.1.22" 
+yj14-ocpi3  cpu=4 mem=6000  network_ipaddr="10.14.1.23" 
+yj14-deploy cpu=4 mem=12288 network_ipaddr="10.14.1.3"  
 
 [ceph]
-yj14-ocps1  cpu=4 mem=4096  network_ipaddr="10.14.1.31" vm_name="yj14-ocps1"  
-yj14-ocps2  cpu=4 mem=4096  network_ipaddr="10.14.1.32" vm_name="yj14-ocps2"  
-yj14-ocps3  cpu=4 mem=4096  network_ipaddr="10.14.1.33" vm_name="yj14-ocps3"  
+yj14-ocps1  cpu=4 mem=4096  network_ipaddr="10.14.1.31" 
+yj14-ocps2  cpu=4 mem=4096  network_ipaddr="10.14.1.32" 
+yj14-ocps3  cpu=4 mem=4096  network_ipaddr="10.14.1.33" 
 
 [all:vars]
 ansible_host="192.168.92.1" 
